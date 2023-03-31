@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const User = require('../models/userModel')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const userModel = require('../models/userModel');
 
 module.exports.signUp = async (req, res, next) => {
   const check = await User.findOne({ username: req.body.username });
@@ -20,7 +21,7 @@ module.exports.signUp = async (req, res, next) => {
 
   await user.save();
 
-  const token = jwt.sign( 
+  const token = jwt.sign(
     {
       username: user.username,
       userId: user._id,
@@ -39,13 +40,13 @@ module.exports.signUp = async (req, res, next) => {
 module.exports.logIn = async (req, res, next) => {
   const user = await User.findOne({ username: req.body.username });
 
-  if (user==null) { 
-    return res.status(400).json({ msg: "Authentication failed" });
+  if (user == null) {
+    return res.status(400).json({ msg: "Wrong credentials!" });
   }
   const chk = await bcrypt.compare(req.body.password, user.password);
 
-  if (!chk) { 
-    return res.status(400).json({ msg: "Authentication failed" });
+  if (!chk) {
+    return res.status(400).json({ msg: "Wrong credentials!" });
   }
 
   const token = jwt.sign(
@@ -63,3 +64,33 @@ module.exports.logIn = async (req, res, next) => {
     user: user,
   });
 };
+
+module.exports.getUser = async (req, res, next) => {
+  user = await userModel.findById(req.UserData['userId'])
+  res.status(200).json(user)
+}
+
+module.exports.updateUser = async (req, res, next) => {
+  user = await userModel.findById(req.UserData['userId'])
+  fuser = await userModel.findOne({username:req.body.username}) 
+
+  if(fuser!=null && user.id!=fuser.id){ 
+    return res.status(400).json({
+      'msg':'username already exists' 
+    })  
+  }
+  fuser = await userModel.findOne({email:req.body.email})
+  if(fuser!=null && user.id!=fuser.id){
+    return res.status(400).json({
+      'msg':'email already exists'
+    })
+  }
+  user.name = req.body.name
+  user.username = req.body.username
+  user.email = req.body.email
+  await user.save() 
+  res.status(200).json({ 
+    'msg': 'user profile updated',
+    'user': user
+  })
+}

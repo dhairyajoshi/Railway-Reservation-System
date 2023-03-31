@@ -11,6 +11,8 @@ mongoose.connect(
 );
 
 const user = require('./routes/user')
+const train = require('./routes/train')
+const book = require('./routes/book')
 const port = process.env.PORT | 3000
 
 app.use(morgan("dev"));
@@ -30,5 +32,7 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => res.send('Hello World!'))
 app.use('/user',user)
+app.use('/train',train)
+app.use('/book',book) 
 
 app.listen(port, () => console.log(`listening on port ${port}`))
