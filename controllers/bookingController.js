@@ -10,6 +10,14 @@ module.exports.getBookings = async (req, res, next) => {
 
 }
 
+module.exports.getAllBookings = async (req, res, next) => {
+
+    tickets = await ticketModel.find().sort('-bookdate').exec()
+
+    res.status(200).json(tickets)
+
+}
+
 module.exports.cancelBooking = async (req, res, next) => {
     try {
         id = req.query.id
