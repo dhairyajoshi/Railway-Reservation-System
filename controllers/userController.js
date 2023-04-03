@@ -5,9 +5,13 @@ const jwt = require("jsonwebtoken");
 const userModel = require('../models/userModel');
 
 module.exports.signUp = async (req, res, next) => {
-  const check = await User.findOne({ username: req.body.username });
+  check = await User.findOne({ username: req.body.username });
   if (check != null)
     return res.status(400).json({ msg: "username already exists" });
+
+  check = await User.findOne({ email: req.body.email }); 
+  if (check != null)
+    return res.status(400).json({ msg: "email already exists" }); 
 
   const hashed = await bcrypt.hash(req.body.password, 10);
 
