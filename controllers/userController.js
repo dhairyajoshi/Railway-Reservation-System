@@ -70,6 +70,12 @@ module.exports.getUser = async (req, res, next) => {
   res.status(200).json(user)
 }
 
+module.exports.getAllUser = async (req, res, next) => {
+  console.log('got') 
+  users = await userModel.find().exec()
+  res.status(200).json(users)
+}
+
 module.exports.updateUser = async (req, res, next) => {
   user = await userModel.findById(req.UserData['userId'])
   fuser = await userModel.findOne({username:req.body.username}) 
